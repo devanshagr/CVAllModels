@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "cross_validate<-function(df,relation,n_iter,sr, model)\n{\n  df <- as.data.frame(df)\n  library(MASS)\n  library(randomForest)\n  relation<-as.formula(relation)\n  #We will compare two models- predictor\n  mean_subset<-c();\n  mean_all<-c();\n  dep<-all.vars(terms(relation))[1]\n  relation_all=as.formula(paste(dep,'.',sep=\"~\"))\n  relation_subset<-relation\n  if(model=='lda'){\n    for(i in 1:n_iter){\n      sample <- sample.int(n = nrow(df), size = floor(sr*nrow(df)), replace = F)\n      train <- df[sample, ]\n      testing  <- df[-sample, ]\n      first.lda<-lda(relation_subset, data=train)\n      second.lda<-lda(relation_all, data=train)\n      pred1.lda<-predict(first.lda,newdata=testing)$class\n      pred2.lda<-predict(second.lda, newdata=testing)$class\n      pred1.lda<-as.numeric(pred1.lda)\n      pred2.lda<-as.numeric(pred2.lda)\n      mean1<-mean((pred1.lda-testing[,dep])^2)\n      mean2<-mean((pred2.lda-testing[,dep])^2)\n      mean_subset<-c(mean_subset,mean1)\n      mean_all<-c(mean_all,mean2)\n    }\n  }\n  else if(model=='rf'){\n    for(i in 1:n_iter){\n      sample <- sample.int(n = nrow(df), size = floor(sr*nrow(df)), replace = F)\n      train <- df[sample, ]\n      testing  <- df[-sample, ]\n      first.rf<-randomForest(relation_subset, data=train)\n      second.rf<-randomForest(relation_all, data=train)\n      pred1.rf<-predict(first.rf,newdata=testing)\n      pred2.rf<-predict(second.rf, newdata=testing)\n      pred1.rf<-as.numeric(pred1.rf)\n      pred2.rf<-as.numeric(pred2.rf)\n      mean1<-mean((pred1.rf-testing[,dep])^2)\n      mean2<-mean((pred2.rf-testing[,dep])^2)\n      mean_subset<-c(mean_subset,mean1)\n      mean_all<-c(mean_all,mean2)\n    }\n  }\n  else{\n    print(\"Please enter correct model\")\n  }\n\n  return (data.frame(accuracy_subset=mean_subset,accuracy_all= mean_all))\n}\n",
+    "created" : 1493078766880.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "198435792",
+    "id" : "C50E67C4",
+    "lastKnownWriteTime" : 1493078793,
+    "last_content_update" : 1493078793895,
+    "path" : "C:/Users/dDev/Desktop/RPackage/CrossValidationAllModels/R/hello.R",
+    "project_path" : "R/hello.R",
+    "properties" : {
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
